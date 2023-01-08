@@ -1,0 +1,170 @@
+#1
+docker --version
+docker pull busybox
+docker pull fedora
+docker images
+docker tag ID dion
+
+myfirst.js
+var http = require('http');
+http.createServer(function(reg,res){
+	res.writeHead(200,{'Content-Type':'text/html'});
+	res.end('Hello World');
+}).listen(8081);
+
+myfirstmodule.js
+exports.MyDateTime = function(){
+	return Date();
+};
+
+myfirstsecond.js
+var http = require('http');
+var dt = repuire('./myfirstmodule');
+http.createServer(function(reg,res){
+	res.writeHead(200,{'Content-Type':'text/html'});
+	res.write('The date and time are currently:' + dt.myDateTime());
+}).listen(8081);
+
+#3
+sudo add-apt-repository -y ppa:ethereum/ethereum
+sudo apt-get update
+sudo apt-get install Ethereum
+geth -h
+mkdir my-blockchain
+cd my-blockchain
+touch genesis.json
+
+Add the following content to genesis.json file:
+{
+  "config": {
+    "chainId": 1234,
+    "homesteadBlock": 0,
+    "eip150Block": 0,
+    "eip155Block": 0,
+    "eip158Block": 0,
+    "byzantiumBlock": 0,
+    "constantinopleBlock": 0,
+    "petersburgBlock": 0,
+    "ethash": {}
+  },
+  "difficulty": "4",
+  "gasLimit": "8000000",
+  "alloc": {}
+}
+
+geth init --datadir node1 genesis.json
+
+geth --datadir node1 --networkid 1234 --http --allow-insecure-unlock --nodiscover
+
+geth attach node1/geth.ipc
+
+admin.nodeInfo
+
+geth attach node2/geth.ipc
+
+admin.addPeer("enode://f36a28715d389642f64ba1a81301186760c30cc07773eb10688cd214960ea4e299ad2c7846e4f5575ddc902de5fc9dc9f4ce475017a5bf0e896332fb96bcb7d8@203.212.25.114:30304?discport=52324")
+
+admin.peers
+
+personal.newAccount()
+
+eth.getBalance("0xb6021d92304a3494979fdca4f26db45d8bb70c64")
+
+miner.start()
+miner.stop()
+
+eth.blockNumber
+
+
+
+
+
+
+
+
+#6
+pragma solidity 0.8.17;
+
+contract VotingForTopper{
+
+    address owner;
+
+    string purpose;
+
+    struct Voter{
+        bool authorized;
+        bool voted;
+    }
+
+    uint TotalVotes;
+    uint teamA;
+    uint teamB;
+    uint teamC;
+
+    mapping(address=>Voter) info;
+
+    constructor(string memory _name) public{
+        purpose = _name;
+        owner = msg.sender;
+    }
+
+    modifier ownerOn(){
+        require(msg.sender==owner);
+        _;
+    }
+
+    function authorize(address _person) ownerOn public{
+        info[_person].authorized = true;
+    }
+
+    function teamAF(address _address) public {
+        require(!info[_address].voted,"already voter person");
+        require(info[_address].authorized,"You have no right for Vote");
+        info[_address].voted = true;
+        teamA++;
+        TotalVotes++;
+    }
+
+    function teamBF(address _address) public {
+        require(!info[_address].voted,"already voter person");
+        require(info[_address].authorized,"You have no right for Vote");
+        info[_address].voted = true;
+        teamB++;
+        TotalVotes++;
+    }
+
+    function teamCF(address _address) public returns(string memory){
+        require(!info[_address].voted,"already voter person");
+        require(info[_address].authorized,"You have no right for Vote");
+        info[_address].voted = true;
+        teamC++;
+        TotalVotes++;
+        return("Thanks for Voting");
+    }
+
+    function TotalVotesF() public view returns(uint){
+        return TotalVotes;
+    }
+
+    function resultOfVoting() public view returns(string memory){
+        if(teamA>teamB){
+            if(teamA>teamC){
+                return "A is Winning";
+            }
+            else if(teamC>teamA){
+                return "C is Winning";
+            }
+        }
+        else if(teamB>teamC){
+            return "B is Winning";
+        }
+        else if(teamC>teamB){
+            return "C is Winning";
+        }
+        else if(teamA==teamB && teamA==teamC || teamB==teamC){
+            return "No One is Winning";
+        }
+    }
+
+}
+
